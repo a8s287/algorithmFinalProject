@@ -124,11 +124,11 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[nx.Graph]:
 
 if __name__=="__main__":
     
-    instances = load_instances(os.path.join(os.getcwd(), "8_8_sparse.csv"))
+    instances = load_instances(os.path.join(os.getcwd(), "challenge_instances.csv"))
     
     G = nx.Graph()
     
-    G.add_edges_from(instances[0][1:])
+    G.add_edges_from(instances[3][1:])
     
     nx.draw_networkx(G)
     plt.show()
