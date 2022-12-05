@@ -74,6 +74,52 @@ def leaf_count(G: Type[nx.Graph]) -> int:
             
     return leaves
 
+def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[nx.Graph]:
+    """
+    maximally_leafy_forest generation for Lu-Ravi algorithm
+
+    Parameters
+    ----------
+    G : Type[nx.Graph]
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    #TODO: WTF DOESNT WORK
+    
+    F = nx.Graph()
+    Sets = {}
+    d = {}
+    
+    for vertex in list(G.nodes):
+        Sets[vertex] = {vertex}
+        d[vertex] = 0
+        
+    for vertex in list(G.nodes):
+        S_prime = []
+        d_prime = 0
+        
+        for edge in G.edges(vertex):
+            if((edge[1] not in Sets[vertex]) and (edge[1] not in S_prime)):
+                d_prime = d_prime + 1
+                S_prime.append(edge[1])
+                
+        if (d[vertex] + d_prime >= 3):
+            for u in S_prime:
+                F.add_edge(u, vertex)
+                
+                temp = Sets[vertex]
+                Sets[vertex] = Sets[vertex].union(Sets[u])
+                Sets[u] = Sets[u].union(temp)
+                
+                d[u] = d[u] + 1
+                d[vertex] = d[vertex] + 1
+    
+    return F
+
 if __name__=="__main__":
     
     instances = load_instances(os.path.join(os.getcwd(), "8_8_sparse.csv"))
@@ -82,12 +128,16 @@ if __name__=="__main__":
     
     G.add_edges_from(instances[0][1:])
     
-    # nx.draw_networkx(G)
+    nx.draw_networkx(G)
+    plt.show()
+    
     
     BFS_Tree = nx.bfs_tree(G, '1')
     BFS_leaves = leaf_count(BFS_Tree)
     
-    print(BFS_leaves)
+    F = maximally_leafy_forest(G)
+    nx.draw_networkx(F)
+    plt.show()
     
     
     
