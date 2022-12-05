@@ -8,9 +8,34 @@ import csv
 import os
 import networkx as nx
 import matplotlib.pyplot as plt
+from typing import Type
 
 
-def load_instances(file_path):
+def load_instances(file_path: str) -> list[list[list]]:
+    """
+    load_instances will load from a csv ith format specified by project assignment
+    k
+    edges, vertices
+    u, v
+    ....
+    edges, vertices
+    u, v
+    ....
+
+    Parameters
+    ----------
+    file_path : str
+        csv path.
+
+    Returns
+    -------
+    list[list[list]]
+        list contains 
+        number of instances
+        number of edges
+        edge [u, v].
+
+    """
     instances = []
     with open(file_path, 'r') as f:
         reader = csv.reader(f)
@@ -25,7 +50,21 @@ def load_instances(file_path):
     
     return instances
 
-def leaf_count(G):
+def leaf_count(G: Type[nx.Graph]) -> int:
+    """
+    Counts number of leaves in a graph, vertices with degree 1
+
+    Parameters
+    ----------
+    G : Type[nx.Graph]
+        the graph, should be tree.
+
+    Returns
+    -------
+    int
+        number of leaves.
+
+    """
     
     leaves = 0
     
