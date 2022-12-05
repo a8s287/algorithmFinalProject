@@ -91,32 +91,34 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[nx.Graph]:
     #TODO: WTF DOESNT WORK
     
     F = nx.Graph()
-    Sets = {}
-    d = {}
+    Subtrees = {}
+    degrees = {}
     
     for vertex in list(G.nodes):
-        Sets[vertex] = {vertex}
-        d[vertex] = 0
+        Subtrees[vertex] = {vertex}
+        degrees[vertex] = 0
         
     for vertex in list(G.nodes):
         S_prime = []
         d_prime = 0
         
         for edge in G.edges(vertex):
-            if((edge[1] not in Sets[vertex]) and (edge[1] not in S_prime)):
+            if((edge[1] not in Subtrees[vertex]) and (edge[1] not in S_prime)):
                 d_prime = d_prime + 1
+                
+                #Insert subtrees[u] into S_prime
                 S_prime.append(edge[1])
                 
-        if (d[vertex] + d_prime >= 3):
+        if (degrees[vertex] + d_prime >= 3):
             for u in S_prime:
                 F.add_edge(u, vertex)
                 
-                temp = Sets[vertex]
-                Sets[vertex] = Sets[vertex].union(Sets[u])
-                Sets[u] = Sets[u].union(temp)
+                temp = Subtrees[vertex]
+                Subtrees[vertex] = Subtrees[vertex].union(Subtrees[u])
+                Subtrees[u] = Subtrees[u].union(temp)
                 
-                d[u] = d[u] + 1
-                d[vertex] = d[vertex] + 1
+                degrees[u] = degrees[u] + 1
+                degrees[vertex] = degrees[vertex] + 1
     
     return F
 
