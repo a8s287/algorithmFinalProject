@@ -94,7 +94,8 @@ def find_leafy_spanning_tree(graph, graph_number=0, our_graphs=[], our_trees=[],
 
 	return best_tree
 
-
+if __name__=="__main__":
+    do_everything()
 
 
 

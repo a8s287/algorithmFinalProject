@@ -155,7 +155,7 @@ def joined_forest_tree(graph):
 
 
 # YOUR CLEVER ALGORITHMS HERE
-def 2Approximation(graph):
+#def 2Approximation(graph):
 
 
 
