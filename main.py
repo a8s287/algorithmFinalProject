@@ -138,14 +138,15 @@ def combine_forest(F: Type[union_find], G: Type[nx.Graph]) -> Type[nx.Graph]:
     return F.get_subtree_from_key(list(F.getKeys())[0])[0]
     
 
-def solve_instance(instance):
+def solve_instance(instance, draw=True):
     
     G = nx.Graph()
     
     G.add_edges_from(instance[1:])
     
-    nx.draw_networkx(G)
-    plt.show()
+    if draw:
+        nx.draw_networkx(G)
+        plt.show()
     
     
     BFS_Tree = nx.bfs_tree(G, '1')
@@ -155,8 +156,9 @@ def solve_instance(instance):
     F_tree = combine_forest(F, G)
     F_tree_leaves = leaf_count(F_tree)
     
-    nx.draw_networkx(F_tree)
-    plt.show()
+    if draw:
+        nx.draw_networkx(F_tree)
+        plt.show()
     
     print("BFS leaves: {}, Lu-Parv leaves: {}".format(BFS_leaves, F_tree_leaves))
     
@@ -167,10 +169,7 @@ def solve_instance(instance):
         return (BFS_Tree, BFS_leaves)
     
 
-if __name__=="__main__":
-    
-    instances = load_instances(os.path.join(os.getcwd(), "Hard.in"))
-    
+def run_instances(instances, file_name="Solved.out"):
     for instance in instances:
         
         T, leaves = solve_instance(instance)
@@ -187,7 +186,19 @@ if __name__=="__main__":
         
         outlist = [head] + outlist
         
-        print(outlist)
+        with open(file_name, "a", newline='') as f:
+           writer = csv.writer(f)
+           
+           writer.writerows(outlist)
+    
+
+if __name__=="__main__":
+    
+    instances = load_instances(os.path.join(os.getcwd(), "Hard.in"))
+    
+    run_instances(instances)
+    
+    
     
     
     
