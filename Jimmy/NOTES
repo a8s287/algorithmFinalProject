@@ -1,0 +1,51 @@
+NOTES:
+
+- Every algorithm that the teams come up with will include some kind of greedy mechanism.
+- We can combat search algorithms that examine local degrees by making graphs highly non-uniform.
+- To solve instances as closely as possible, we shold design multiple algorithms.
+
+
+
+HARD INSTANCE IDEAS:
+
+First, build a leafy spanning tree. The following are ways to do this:
+1. Constant construction
+	- Build tree breadth-first (using queue)
+	- At each node, branch and leaf factors are constants (parameters of the entire tree instance)
+	- Two construction modes:
+		i. Leaf factor > branch factor (we suspect this will turn out better; can you see why?)
+		ii. Leaf factor < branch factor
+
+2. Randomized construction
+	- Build tree breadth-first (using queue)
+	- At each node, branch and leaf factors are random numbers
+		i. Total degree of node = branch factor + leaf factor
+		ii. Leaf factor > branch factor
+
+Then, add edges to the tree so as to turn it into a general graph, with the goal being to obscure the leaves within.
+	- Build a random-ordered list of edges between leaves
+	- Add edges from this list to the tree to turn it into a graph
+	- Enforce the policy that no leaf eventually has higher degree than its parent
+
+
+
+ALGORITHM IDEAS:
+
+1. Tree search (on the graph) with intelligent pruning heuristics
+	- Expands neighbor with highest degree
+	- Recommended by Siu-Man Chan
+	- Easily tricked by hard instances
+
+2. Joined leafy forest (Lu/Ravi paper)
+	- Builds a maximally leafy forest of the graph, then joins trees in the forest to make a leafy spanning tree
+	- Guarantees an approximation factor of 3
+	- More detailed pseudocode than Solis-Oba
+
+3. Joined leafy forest with expansion rules (Solis-Oba paper)
+	- Builds a leafy forest using "expansion rules", then joins the trees in the forest to make a leafy spanning tree
+	- Guarantees an approximation factor of 2
+	- Very vague pseudocode, may not be practical to implement
+
+4. Randomized Kruskal's algorithm
+	- Randomly selects edges and adds them if doing so does not induce a cycle
+	- Repeat procedure many times and take the best output (results in normal distribution of leaf numbers, so not efficient if aiming for very close approximation)
