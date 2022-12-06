@@ -24,8 +24,10 @@ def randomized_tree(graph):
 	graph.search()
 	nodes = get_nodes(graph)
 	edges = get_edges(graph)
-
-	# Bests so far
+    
+    #print ("factorial is ",edges)
+	
+    # Bests so far
 	most_leaves = 0
 	best_tree = None
 
@@ -63,7 +65,7 @@ def randomized_tree(graph):
 
 				break
 
-	return best_tree
+	return best_tree, edges
 
 
 # Implements the Lu-Ravi algorithm in the paper "Approximating Maximum Leaf
@@ -155,8 +157,13 @@ def joined_forest_tree(graph):
 
 
 # YOUR CLEVER ALGORITHMS HERE
-#def 2Approximation(graph):
-
+def approximation(graph):
+    
+    # Fill out graph attributes
+	graph.search()
+	nodes = get_nodes(graph)
+	edges = get_edges(graph)
+    
 
 
 # Maintain a list of all (algorithm name, algorithm function) so that they can be
