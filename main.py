@@ -9,6 +9,7 @@ import os
 import networkx as nx
 import matplotlib.pyplot as plt
 from typing import Type
+from unionFind import union_find
 
 
 def load_instances(file_path: str) -> list[list[list]]:
@@ -74,7 +75,7 @@ def leaf_count(G: Type[nx.Graph]) -> int:
             
     return leaves
 
-def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[nx.Graph]:
+def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[union_find]:
     """
     maximally_leafy_forest generation for Lu-Ravi algorithm
 
@@ -90,12 +91,14 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[nx.Graph]:
     """
     #TODO: WTF DOESNT WORK
     
-    F = nx.Graph()
-    Subtrees = {}
+    Subtrees = union_find()
     degrees = {}
     
     for vertex in list(G.nodes):
-        Subtrees[vertex] = {vertex}
+        T = nx.Graph()
+        T.add_node(vertex)
+        
+        Subtrees.new_subtree(vertex, T, vertex)
         degrees[vertex] = 0
         
     for vertex in list(G.nodes):
@@ -103,32 +106,33 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[nx.Graph]:
         d_prime = 0
         
         for edge in G.edges(vertex):
-            if((edge[1] not in Subtrees[vertex]) and (edge[1] not in S_prime)):
+            if((edge[1] not in Subtrees.get_subtree(vertex)) 
+               and (Subtrees.getKey(edge[1]) not in S_prime)):
                 d_prime = d_prime + 1
                 
                 #Insert subtrees[u] into S_prime
-                S_prime.append(edge[1])
+                S_prime.append(Subtrees.getKey(edge[1]))
                 
         if (degrees[vertex] + d_prime >= 3):
-            for u in S_prime:
-                F.add_edge(u, vertex)
+            for subtree in S_prime:
+                cur_subtree = Subtrees.get_subtree_from_key(subtree)
                 
-                temp = Subtrees[vertex]
-                Subtrees[vertex] = Subtrees[vertex].union(Subtrees[u])
-                Subtrees[u] = Subtrees[u].union(temp)
-                
-                degrees[u] = degrees[u] + 1
+                Subtrees.merge(vertex, cur_subtree[1])
                 degrees[vertex] = degrees[vertex] + 1
+                degrees[cur_subtree[1]] = degrees[cur_subtree[1]] + 1
+                
     
-    return F
+    print(Subtrees)
+    
+    return Subtrees
 
 if __name__=="__main__":
     
-    instances = load_instances(os.path.join(os.getcwd(), "challenge_instances.csv"))
+    instances = load_instances(os.path.join(os.getcwd(), "Graph.csv"))
     
     G = nx.Graph()
     
-    G.add_edges_from(instances[3][1:])
+    G.add_edges_from(instances[0][1:])
     
     nx.draw_networkx(G)
     plt.show()
@@ -138,8 +142,15 @@ if __name__=="__main__":
     BFS_leaves = leaf_count(BFS_Tree)
     
     F = maximally_leafy_forest(G)
-    nx.draw_networkx(F)
-    plt.show()
+    
+    print("Final Forest")
+    
+    for key in F.getKeys():
+        nx.draw_networkx(F.get_subtree_from_key(key)[0])
+        plt.show()
+    
+    
+    
     
     
     
