@@ -72,7 +72,7 @@ class union_find:
           
         del self.data[key2] 
     
-    def merge(self, item1, item2):
+    def merge(self, item1, item2, root1=None, root2=None):
         
         try:
             if item1 == item2:
@@ -85,7 +85,11 @@ class union_find:
         
         
         self.data[key1][0] = nx.compose(self.data[key2][0], self.data[key1][0])
-        self.data[key1][0].add_edge(self.data[key1][1], self.data[key2][1])
+        
+        if not (root1 and root2):
+            self.data[key1][0].add_edge(self.data[key1][1], self.data[key2][1])
+        else:
+            self.data[key1][0].add_edge(root1, root2)
         
         # print("Merging tree with {} and {}".format(item1, item2))
         # nx.draw_networkx(self.data[key1][0])
