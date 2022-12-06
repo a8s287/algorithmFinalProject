@@ -122,9 +122,22 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[union_find]:
                 degrees[cur_subtree[1]] = degrees[cur_subtree[1]] + 1
                 
     
-    print(Subtrees)
+    # print(Subtrees)
     
     return Subtrees
+
+def combine_forest(F: Type[union_find], G: Type[nx.Graph]) -> Type[nx.Graph]:
+    
+    root_tree = F.get_subtree_from_key(list(F.getKeys())[0])[0]
+    
+    for subtree in list(F.getKeys())[1:]:
+        for node in F.get_subtree_from_key(subtree)[0].nodes:
+            for check_node in root_tree.nodes:
+                if G.has_edge(node, check_node) or G.has_edge(check_node, node):
+                    F.merge(check_node, node, root1=check_node, root2=node)
+    
+    return F.get_subtree_from_key(list(F.getKeys())[0])[0]
+    
 
 if __name__=="__main__":
     
@@ -142,12 +155,13 @@ if __name__=="__main__":
     BFS_leaves = leaf_count(BFS_Tree)
     
     F = maximally_leafy_forest(G)
+    F_tree = combine_forest(F, G)
+    F_tree_leaves = leaf_count(F_tree)
     
-    print("Final Forest")
+    nx.draw_networkx(F_tree)
+    plt.show()
     
-    for key in F.getKeys():
-        nx.draw_networkx(F.get_subtree_from_key(key)[0])
-        plt.show()
+    print("BFS leaves: {}, Lu-Parv leaves: {}".format(BFS_leaves, F_tree_leaves))
     
     
     
