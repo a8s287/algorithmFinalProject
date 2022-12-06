@@ -39,7 +39,7 @@ def load_instances(file_path: str) -> list[list[list]]:
     """
     instances = []
     with open(file_path, 'r') as f:
-        reader = csv.reader(f)
+        reader = csv.reader(f, delimiter=' ', skipinitialspace=True)
         
         num_instances = next(reader)
         for instance in range(int(num_instances[0])):
@@ -89,7 +89,6 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[union_find]:
     None.
 
     """
-    #TODO: WTF DOESNT WORK
     
     Subtrees = union_find()
     degrees = {}
@@ -139,13 +138,11 @@ def combine_forest(F: Type[union_find], G: Type[nx.Graph]) -> Type[nx.Graph]:
     return F.get_subtree_from_key(list(F.getKeys())[0])[0]
     
 
-if __name__=="__main__":
-    
-    instances = load_instances(os.path.join(os.getcwd(), "Graph.csv"))
+def solve_instance(instance):
     
     G = nx.Graph()
     
-    G.add_edges_from(instances[0][1:])
+    G.add_edges_from(instance[1:])
     
     nx.draw_networkx(G)
     plt.show()
@@ -162,6 +159,35 @@ if __name__=="__main__":
     plt.show()
     
     print("BFS leaves: {}, Lu-Parv leaves: {}".format(BFS_leaves, F_tree_leaves))
+    
+    if(F_tree_leaves > BFS_leaves):
+        return (F_tree, F_tree_leaves)
+    
+    else:
+        return (BFS_Tree, BFS_leaves)
+    
+
+if __name__=="__main__":
+    
+    instances = load_instances(os.path.join(os.getcwd(), "Hard.in"))
+    
+    for instance in instances:
+        
+        T, leaves = solve_instance(instance)
+        
+        outlist = []
+        
+        head = [leaves, 0]
+        
+        for edge in T.edges:
+            outlist.append(list(map(int, edge)))
+            head[1] += 1
+            
+        outlist = sorted(outlist, key=lambda x: x[0])
+        
+        outlist = [head] + outlist
+        
+        print(outlist)
     
     
     
