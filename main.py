@@ -39,7 +39,7 @@ def load_instances(file_path: str) -> list[list[list]]:
     """
     instances = []
     with open(file_path, 'r') as f:
-        reader = csv.reader(f)
+        reader = csv.reader(f, delimiter=' ', skipinitialspace=True)
         
         num_instances = next(reader)
         for instance in range(int(num_instances[0])):
@@ -89,7 +89,6 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[union_find]:
     None.
 
     """
-    #TODO: WTF DOESNT WORK
     
     Subtrees = union_find()
     degrees = {}
@@ -122,32 +121,84 @@ def maximally_leafy_forest(G: Type[nx.Graph]) -> Type[union_find]:
                 degrees[cur_subtree[1]] = degrees[cur_subtree[1]] + 1
                 
     
-    print(Subtrees)
+    # print(Subtrees)
     
     return Subtrees
 
-if __name__=="__main__":
+def combine_forest(F: Type[union_find], G: Type[nx.Graph]) -> Type[nx.Graph]:
     
-    instances = load_instances(os.path.join(os.getcwd(), "Graph.csv"))
+    root_tree = F.get_subtree_from_key(list(F.getKeys())[0])[0]
+    
+    for subtree in list(F.getKeys())[1:]:
+        for node in F.get_subtree_from_key(subtree)[0].nodes:
+            for check_node in root_tree.nodes:
+                if G.has_edge(node, check_node) or G.has_edge(check_node, node):
+                    F.merge(check_node, node, root1=check_node, root2=node)
+    
+    return F.get_subtree_from_key(list(F.getKeys())[0])[0]
+    
+
+def solve_instance(instance, draw=True):
     
     G = nx.Graph()
     
-    G.add_edges_from(instances[0][1:])
+    G.add_edges_from(instance[1:])
     
-    nx.draw_networkx(G)
-    plt.show()
+    if draw:
+        nx.draw_networkx(G)
+        plt.show()
     
     
     BFS_Tree = nx.bfs_tree(G, '1')
     BFS_leaves = leaf_count(BFS_Tree)
     
     F = maximally_leafy_forest(G)
+    F_tree = combine_forest(F, G)
+    F_tree_leaves = leaf_count(F_tree)
     
-    print("Final Forest")
-    
-    for key in F.getKeys():
-        nx.draw_networkx(F.get_subtree_from_key(key)[0])
+    if draw:
+        nx.draw_networkx(F_tree)
         plt.show()
+    
+    print("BFS leaves: {}, Lu-Parv leaves: {}".format(BFS_leaves, F_tree_leaves))
+    
+    if(F_tree_leaves > BFS_leaves):
+        return (F_tree, F_tree_leaves)
+    
+    else:
+        return (BFS_Tree, BFS_leaves)
+    
+
+def run_instances(instances, file_name="Solved.out"):
+    for instance in instances:
+        
+        T, leaves = solve_instance(instance)
+        
+        outlist = []
+        
+        head = [leaves, 0]
+        
+        for edge in T.edges:
+            outlist.append(list(map(int, edge)))
+            head[1] += 1
+            
+        outlist = sorted(outlist, key=lambda x: x[0])
+        
+        outlist = [head] + outlist
+        
+        with open(file_name, "a", newline='') as f:
+           writer = csv.writer(f)
+           
+           writer.writerows(outlist)
+    
+
+if __name__=="__main__":
+    
+    instances = load_instances(os.path.join(os.getcwd(), "Hard.in"))
+    
+    run_instances(instances)
+    
+    
     
     
     
