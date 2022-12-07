@@ -168,7 +168,20 @@ def solve_instance(instance, draw=True):
     else:
         return (BFS_Tree, BFS_leaves)
     
-
+def outputFile(C,file_name="Solis.out"):
+    outlist = []
+    head = [len(C.nodes), len(C.edges)]
+    for i in C.edges:
+        outlist.append([int(i[0]),int(i[1])])
+    
+    outlist = sorted(outlist, key=lambda x: x[0])
+    print(outlist)
+    
+    outlist = [head] + outlist
+    with open(file_name, "a", newline='') as f:
+       writer = csv.writer(f)
+       
+       writer.writerows(outlist)
 def run_instances(instances, file_name="Solved.out"):
     for instance in instances:
         
@@ -191,15 +204,7 @@ def run_instances(instances, file_name="Solved.out"):
            
            writer.writerows(outlist)
     
-def Solis(instances):
-    instances.pop()
-    instances.pop()
-    instances.pop()
-    instances.pop()
-    instances.pop()
-    instances.pop()
-    instances.pop()
-    for instance in instances:
+def Solis(instance):
         G = nx.Graph()
         copyG = nx.Graph()
         node_num = 0
@@ -254,8 +259,8 @@ def Solis(instances):
             nx.draw(i, with_labels=True, font_weight='bold')
             plt.show() """
         print(G.edges)
-        nx.draw(G, with_labels=True, font_weight='bold')
-        plt.show() 
+        #nx.draw(G, with_labels=True, font_weight='bold')
+        #plt.show() 
         
         for i in list(G.nodes):
             Ti = nx.Graph()
@@ -263,9 +268,9 @@ def Solis(instances):
                 Ti,G = separateGNodes(G,i,Ti)
             if len(Ti.nodes) > 0:
                 F.append(Ti)
-        for i in F:
-            nx.draw(i, with_labels=True, font_weight='bold')
-            plt.show() 
+        #for i in F:
+        #    nx.draw(i, with_labels=True, font_weight='bold')
+        #    plt.show() 
         #Connect the trees in F and all vertices not in F to form a spanning tree T .
         
         return connect(F,copyG)
@@ -504,13 +509,20 @@ def separateGNodes(G,root,Ti):
 if __name__=="__main__":
     
     instances = load_instances(os.path.join(os.getcwd(), "Hard.in"))
-    
     #run_instances(instances)
-    C = Solis(instances)
-    print(len(C.nodes))
-    print(len(C.edges))
-    nx.draw(C, with_labels=True, font_weight='bold')
-    plt.show() 
+    file_path = "Solis.out"
+
+    try:
+        os.remove(file_path)
+    #os.unlink(file_path)
+    except OSError as e:
+        print("Error: %s : %s" % (file_path, e.strerror))
+
+    for instance in instances:
+        C = Solis(instance)
+        nx.draw(C, with_labels=True, font_weight='bold')
+        plt.show() 
+        outputFile(C)
     """
     Testing of seperate G nodes
     G = nx.Graph()
