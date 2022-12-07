@@ -509,7 +509,10 @@ def separateGNodes(G,root,Ti):
 if __name__=="__main__":
     
     instances = load_instances(os.path.join(os.getcwd(), "Hard.in"))
+    #Don't know why this doesn't work out
     #run_instances(instances)
+    
+    #remove file and build a new one output file
     file_path = "Solis.out"
 
     try:
