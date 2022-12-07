@@ -197,7 +197,7 @@ def Solis(instances):
     instances.pop();
     instances.pop();
     instances.pop();
-    
+    instances.pop();
     for instance in instances:
         G = nx.Graph()
         
@@ -211,13 +211,11 @@ def Solis(instances):
             else:
                 G.add_edge(instance[i][0],instance[i][1])
         #nx.draw(G, with_labels=True, font_weight='bold')
-        print(len(G.edges))
-        
+        print(G.nodes)
         
         #build a forest which is void at first
-        F = nx.Graph()
+        F = []
         #while there is a vertex v of degree at least 3 do
-        
         flag = 1
         while flag == 1:
             flag = 0
@@ -231,9 +229,11 @@ def Solis(instances):
                 #Build a tree Ti with root v and leaves the neighbors of v
                 T = nx.Graph()
                 T.add_node(vertex)
-                
+                print(vertex)
                 G,T = root_expand(G, vertex, T)
-                #print(v)
+                nx.draw(T, with_labels=True, font_weight='bold')
+                plt.show() 
+                F.append(T)
                 #print(T.nodes)
                 #print(G.nodes)
                 #print(G.edges)
@@ -244,7 +244,9 @@ def Solis(instances):
                     
                     #print(v)
         
-        
+        for i in F:
+            nx.draw(i, with_labels=True, font_weight='bold')
+            plt.show() 
         nx.draw(G, with_labels=True, font_weight='bold')
         plt.show() 
 def root_expand(G, v, T):
@@ -266,33 +268,54 @@ def root_expand(G, v, T):
                 neighbors.append(neighbor)
                 T.add_node(neighbor)
                 T.nodes[neighbor]['color'] = color
-                T.add_edge(*(v,neighbor))
+                if T.degree(neighbor) == 0:
+                    T.add_edge(*(v,neighbor))
             #after adding v to T and find all neighbor of v, remove it
             G.remove_node(v)
             
+            #for neighbor in neighbors:
+                
             
             #expand neighbor with priorty 2 first, then expand priorty 1
             for neighbor in neighbors:
                 if(T.nodes[neighbor]['color'] == "green"):
-                    print(T.nodes[neighbor]['color'] )
-                    #G,T = neighbor_expand(G,neighbor,T)
+                    print(neighbor)
+                    G,T = neighbor_expand(G,neighbor,T)
             for neighbor in neighbors:
                 if(T.nodes[neighbor]['color'] == "blue"):
-                    print(T.nodes[neighbor]['color'] )
-                    #G,T = neighbor_expand(G,neighbor,T)
-                
+                    print(neighbor)
+                    G,T = neighbor_expand(G,neighbor,T)
+            for neighbor in neighbors:
+                if(T.nodes[neighbor]['color'] == "NULL"):
+                    if neighbor in G.nodes:
+                        G.remove_node(neighbor)  
     return(G,T)
 def neighbor_expand(G,v,T):
+    t = 0
+    for r in list(G.adjacency()):
+        if r[0] == v:
+            for neigh in r[1]:
+                if neigh in T.nodes:
+                    t+=1
+    if G.degree(v)-t < 2:
+        return G,T
     for root in list(G.adjacency()):
         if root[0] == v:
             #add neighbor into Ti
             neighbors = []
             for neighbor in root[1]:
+                t = 0
+                for r in list(G.adjacency()):
+                    if r[0] == neighbor:
+                        for neigh in r[1]:
+                            if neigh in T.nodes:
+                                t+=1
                 color = None
-                if G.degree(neighbor) == 3:
+                print(neighbor+" "+str(G.degree(neighbor)-t))
+                if G.degree(neighbor)-t == 2:
                     #color blue means priorty 1
                     color = "blue"
-                elif G.degree(neighbor) > 3:
+                elif G.degree(neighbor)-t > 2:
                     #color green means priorty 2
                     color = "green"
                 else:
@@ -301,10 +324,25 @@ def neighbor_expand(G,v,T):
                 neighbors.append(neighbor)
                 T.add_node(neighbor)
                 T.nodes[neighbor]['color'] = color
-                T.add_edge(*(v,neighbor))
+                if T.degree(neighbor) == 0:
+                    T.add_edge(*(v,neighbor))
             #after adding v to T and find all neighbor of v, remove it
             G.remove_node(v)
-                
+            
+            
+            #expand T.leaves with priorty 2 first, then expand priorty 1
+            """for neighbor in neighbors:
+                if(T.nodes[neighbor]['color'] == "green"):
+                    print(neighbor)
+                    G,T = neighbor_expand(G,neighbor,T)
+            for neighbor in neighbors:
+                if(T.nodes[neighbor]['color'] == "blue"):
+                    print(neighbor)
+                    G,T = neighbor_expand(G,neighbor,T)
+            for neighbor in neighbors:
+                if(T.nodes[neighbor]['color'] == "NULL"):
+                    if neighbor in G.nodes:
+                        G.remove_node(neighbor)  """
     return(G,T)
 
         
